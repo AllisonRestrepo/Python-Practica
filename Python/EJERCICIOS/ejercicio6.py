@@ -26,7 +26,13 @@ print(diccionario.get("green"))
 print(diccionario.get("c1"))
 print(diccionario.get("c3"))
 print(diccionario.get("valor3"))
-llave = input("Ingrese la nueva llave: ")
-valor = input("Ingrese el nuevo valor: ")
-diccionario[llave] = valor
-print(diccionario)
+print("----------------------")
+resp = input("Ingrese un color : ")
+if resp not in diccionario:
+    print("No existe en el dicionario.")
+    llave = input("Ingrese la nueva llave: ")
+    valor = input("Ingrese el nuevo valor: ")
+    diccionario[llave] = valor
+    print(diccionario)
+else:
+    print(f"Clave {resp} -> valor: {diccionario[resp]}")
