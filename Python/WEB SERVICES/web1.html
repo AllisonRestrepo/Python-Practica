@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente SOAP - Capital de un País</title>
+</head>
+<body>
+    <h2>Obtener la Capital de un País</h2>
+    <label for="codigo">Código del País (ISO):</label>
+    <input type="text" id="codigo" placeholder="Ejemplo: CO">
+    <button onclick="obtenerCapital()">Consultar</button>
+    <p id="resultado"></p>
+
+    <script>
+        function obtenerCapital() {
+            const codigoPais = document.getElementById("codigo").value;
+            if (!codigoPais) {
+                alert("Por favor, ingrese un código de país.");
+                return;
+            }
+            
+            const soapRequest = `
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                                  xmlns:web="http://www.oorsprong.org/websamples.countryinfo">
+                    <soapenv:Header/>
+                    <soapenv:Body>
+                        <web:CapitalCity>
+                            <web:sCountryISOCode>${codigoPais}</web:sCountryISOCode>
+                        </web:CapitalCity>
+                    </soapenv:Body>
+                </soapenv:Envelope>`;
+
+            fetch("http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/xml; charset=utf-8",
+                    "SOAPAction": "http://www.oorsprong.org/websamples.countryinfo/CountryInfoService.wso/CapitalCity"
+                },
+                body: soapRequest
+            })
+            .then(response => response.text())
+            .then(responseText => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(responseText, "text/xml");
+                const capital = xmlDoc.getElementsByTagName("m:CapitalCityResult")[0].textContent;
+                document.getElementById("resultado").innerText = "Capital: " + capital;
+            })
+            .catch(error => {
+                console.error("Error al consultar el servicio SOAP", error);
+                document.getElementById("resultado").innerText = "Error en la consulta";
+            });
+        }
+    </script>
+</body>
+</html>
